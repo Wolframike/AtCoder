@@ -37,5 +37,5 @@ jobs:
     - name : Error Handling
       if : ${{steps.git_update.outcome == 'failure'}}
       run : |
-        echo "No new submissions found. Your repo were not updated"
+        echo "No changes to commit. Repository is up to date."
         
