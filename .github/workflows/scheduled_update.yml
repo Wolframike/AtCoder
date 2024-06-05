@@ -27,10 +27,10 @@ jobs:
       id : git_update
       continue-on-error: true
       run : |
-        git config user.name "AutoCloneBot"
+        git config user.name "AtCoder"
         git config user.email "acautoclone@bot.com"
         git add .
-        git commit -m "Added my codes from AtCoder"
+        git commit -m "Automatically updated by AtCoder-AutoClone"
         git pull
         git push origin main
         
