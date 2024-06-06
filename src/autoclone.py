@@ -1,6 +1,7 @@
 import os
 import yaml
 from datetime import datetime
+import time
 
 from bs4 import BeautifulSoup
 import requests
@@ -102,15 +103,16 @@ class AutoClone(object):
 
             if self.ac_only and result == "AC":
                 code = self.get_code(contest_id, submission_id)
-                self.write_code(code, contest_id, problem_id, language)
+                if code:
+                    self.write_code(code, contest_id, problem_id, language)
             else:
-                # Accept non-AC reuslt
+                # Accept non-AC result
                 # Currently Unavailable
                 pass
 
     def __call__(self):
         """
-        Excecute AutoClone
+        Execute AutoClone
         """
         self.get_submissions()
         self.get_and_write_submitted_codes()
@@ -125,7 +127,7 @@ class AutoClone(object):
         contest_id : str
             target contest_id
         submission_id : int
-            target submissio_id
+            target submission_id
 
         Returns
         -------
@@ -135,17 +137,21 @@ class AutoClone(object):
         submission_url = (
             f"https://atcoder.jp/contests/{contest_id}/submissions/{submission_id}"
         )
-        return BeautifulSoup(
-            requests.get(submission_url).content, "html.parser"
-        ).pre.string
+        max_retries = 5
+        for attempt in range(max_retries):
+            response = requests.get(submission_url)
+            if response.content:
+                return BeautifulSoup(response.content, "html.parser").pre.string
+            time.sleep(2)  # wait for 2 seconds before retrying
+        raise Exception(f"Failed to retrieve content from {submission_url} after {max_retries} attempts")
 
     @staticmethod
     def write_code(code, contest_id, problem_id, language) -> None:
         """
         Write code as new file
 
-        Parameter
-        ---------
+        Parameters
+        ----------
         code : str
             str of raw code without extension
         contest_id : str
