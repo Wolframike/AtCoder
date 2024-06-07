@@ -48,6 +48,21 @@ class dp_minimize : public vector<int> {
 		}
 };
 
+vector<string> getallsubstrings(string S) {
+	vector<string> substrings;
+	for (int i = 0; i < S.size(); i++) {
+		for (int j = i; j < S.size(); j++) {
+			substrings.push_back(S.substr(i, j - i + 1));
+		}
+	}
+	return substrings;
+}
+template <typename C, typename E>
+bool contains(const C& container, const E& element) {
+	return std::find(container.begin(), container.end(), element) != container.end();
+}
+
+#define acout cout << fixed << setprecision(0)
 template <typename T>
 ostream& operator<<(ostream& os, const vector<T>& vec) {
 	for (const auto& v : vec)
@@ -94,12 +109,57 @@ ostream& operator<<(ostream& os, const vector<vector<T>>& vec) {
 #define fast ios_base::sync_with_stdio(false); cin.tie(NULL);
 
 signed main(void) {fast
-	iin(N, S, M, L);
-	dp_minimize dp(N);
-	dp.additem(6, S);
-	dp.additem(8, M);
-	dp.additem(12, L);
-	cout << dp.solve() << endl;
+	iin(N);
+	vvi A(N);
+	int c;
+	sfor(i, N) {
+		cin >> c;
+		vin(a, c);
+		A[i] = a;
+	}
+	iin(X);
+
+	typedef struct player{
+		int index;
+		int betnums;
+		vi bets;
+	} player;
+
+	vector<player> players;
+
+	sfor(i, N) {
+		if (!contains(A[i], X))
+			continue;
+		player p;
+		p.index = i + 1;
+		p.betnums = A[i].size();
+		p.bets = A[i];
+		players.push_back(p);
+	}
+	if (players.empty()) {
+		cout << 0 << endl << endl;
+		return 0;
+	}
+
+	sort(forall(players), [](player a, player b) {
+		return a.betnums < b.betnums;
+	});
+	int s = players[0].betnums;
+	vector<player> ans;
+	sfor(i, players.size()) {
+		if (players[i].betnums != s)
+			break;
+		ans.push_back(players[i]);
+	}
+	sort(forall(ans), [](player a, player b) {
+		return a.index < b.index;
+	});
+	cout << ans.size() << endl;
+	foreach(p, ans) {
+		cout << p.index << " ";
+	}
+	cout << endl;
+
 
 	return 0;
 }

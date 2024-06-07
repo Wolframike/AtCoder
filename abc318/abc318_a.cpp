@@ -48,6 +48,17 @@ class dp_minimize : public vector<int> {
 		}
 };
 
+vector<string> getallsubstrings(string S) {
+	vector<string> substrings;
+	for (int i = 0; i < S.size(); i++) {
+		for (int j = i; j < S.size(); j++) {
+			substrings.push_back(S.substr(i, j - i + 1));
+		}
+	}
+	return substrings;
+}
+
+#define acout cout << fixed << setprecision(0)
 template <typename T>
 ostream& operator<<(ostream& os, const vector<T>& vec) {
 	for (const auto& v : vec)
@@ -94,12 +105,13 @@ ostream& operator<<(ostream& os, const vector<vector<T>>& vec) {
 #define fast ios_base::sync_with_stdio(false); cin.tie(NULL);
 
 signed main(void) {fast
-	iin(N, S, M, L);
-	dp_minimize dp(N);
-	dp.additem(6, S);
-	dp.additem(8, M);
-	dp.additem(12, L);
-	cout << dp.solve() << endl;
+	iin(N, M, P);
+	int c = 0;
+	while (M <= N) {
+		c++;
+		M += P;
+	}
+	cout << c << endl;
 
 	return 0;
 }

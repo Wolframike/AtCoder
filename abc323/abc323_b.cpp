@@ -19,17 +19,40 @@ using vi = vector<int>;
 using vvi = vector<vector<int>>;
 using pii = pair<int, int>;
 using vpii = vector<pair<int, int>>;
-class dp_minimize : public vector<int> {
+class dp_template : public vector<int> {
 	protected:
 		vector<pair<int, int>> weight_cost;
 		int threshold;
+		explicit dp_template(int N) : vector<int>(), threshold(N) {}
 	public:
-		explicit dp_minimize(int N) : vector<int>(), threshold(N) {}
-
 		void additem(int weight, int cost) {
 			weight_cost.push_back({weight, cost});
 		}
+};
 
+class dp_maximize : public dp_template {
+	public:
+		explicit dp_maximize(int N) : dp_template(N) {}
+		int solve() {
+			const int maxweight = max_element(weight_cost.begin(), weight_cost.end())->first;
+			resize(threshold + maxweight + 1, -inf);
+			at(0) = 0;
+			for (int i = 0; i <= threshold; i++) {
+				if (at(i) == -inf)
+					continue;
+				for (auto [w, v] : weight_cost) {
+					if (i + w <= threshold + maxweight) {
+						at(i + w) = max(at(i + w), at(i) + v);
+					}
+				}
+			}
+			return *max_element(begin() + threshold, end());
+		}
+};
+
+class dp_minimize : public dp_template { 
+	public:
+		explicit dp_minimize(int N) : dp_template(N) {}
 		int solve() {
 			const int maxweight = max_element(weight_cost.begin(), weight_cost.end())->first;
 			resize(threshold + maxweight + 1, inf);
@@ -88,18 +111,28 @@ ostream& operator<<(ostream& os, const vector<vector<T>>& vec) {
 #define minof(v) (*min_element(v.begin(), v.end()))
 #define maxon(v) (max_element(v.begin(), v.end()) - v.begin())
 #define minon(v) (min_element(v.begin(), v.end()) - v.begin())
-#define deletepos(v, x) (v).erase((v).begin() + x)
-#define deleteval(v, x) (v).erase(find(forall(v), x))
 #define popcount __builtin_popcount
 #define fast ios_base::sync_with_stdio(false); cin.tie(NULL);
 
 signed main(void) {fast
-	iin(N, S, M, L);
-	dp_minimize dp(N);
-	dp.additem(6, S);
-	dp.additem(8, M);
-	dp.additem(12, L);
-	cout << dp.solve() << endl;
+	iin(N);
+	vpii A(N);
+	string S;
+	sfor(i, N) {
+		cin >> S;
+		A[i] = {count(forall(S), 'o'), i + 1};
+	}
 
+	int max;
+	sfor(i, N) {
+		max = 0;
+		sfor(j, N) {
+			if (A[j].first > A[max].first)
+				max = j;
+		}
+		cout << A[max].second << " ";
+		A[max].first = -1;
+	}
+	cout << endl;
 	return 0;
 }

@@ -48,6 +48,7 @@ class dp_minimize : public vector<int> {
 		}
 };
 
+#define acout cout << fixed << setprecision(0)
 template <typename T>
 ostream& operator<<(ostream& os, const vector<T>& vec) {
 	for (const auto& v : vec)
@@ -94,12 +95,8 @@ ostream& operator<<(ostream& os, const vector<vector<T>>& vec) {
 #define fast ios_base::sync_with_stdio(false); cin.tie(NULL);
 
 signed main(void) {fast
-	iin(N, S, M, L);
-	dp_minimize dp(N);
-	dp.additem(6, S);
-	dp.additem(8, M);
-	dp.additem(12, L);
-	cout << dp.solve() << endl;
+	iin(A, B);
+	acout << pow(A, B) + pow(B, A) << endl;
 
 	return 0;
 }
