@@ -67,61 +67,49 @@ istream &operator>>(istream &in, xuint &value) { string s; in >> s; value = 0; f
 #define popcount __builtin_popcount
 #define fast ios_base::sync_with_stdio(false); cin.tie(NULL);
 
-struct Edge {
-	int to;
-	int cost;
-};
-
-using Graph = vector<vector<Edge>>;
-
-using Pair = pair<long long, int>;
-
-void Dijkstra(const Graph& graph, vector<long long>& distances, const vector<long long>& vertex_weights, int startIndex) {
-	priority_queue<Pair, vector<Pair>, greater<Pair>> q;
-	distances[startIndex] = vertex_weights[startIndex];
-	q.emplace(distances[startIndex], startIndex);
-
+class directed_graph : public vector<vector<pair<int, int>>> { public: directed_graph(int n) : vector<vector<pair<int, int>>>(n) {} void add_edge(int from, int to, int weight) { (*this)[from].emplace_back(to, weight); } };
+class undirected_graph : public directed_graph { public: undirected_graph(int n) : directed_graph(n) {} void add_edge(int from, int to, int weight) { directed_graph::add_edge(from, to, weight); directed_graph::add_edge(to, from, weight); } };
+vector<int> dijkstra(const directed_graph& graph, int start) {
+	vector<int> distances(graph.size(), inf);
+	int n = graph.size();
+	priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> q;
+	distances[start] = 0;
+	q.emplace(distances[start], start);
 	while (!q.empty()) {
-		const long long distance = q.top().first;
-		const int from = q.top().second;
+		int distance = q.top().first;
+		int from = q.top().second;
 		q.pop();
-
-		if (distances[from] < distance) {
+		if (distances[from] < distance)
 			continue;
-		}
-
 		for (const auto& edge : graph[from]) {
-			const long long d = distance + edge.cost + vertex_weights[edge.to];
-
-			if (d < distances[edge.to]) {
-				distances[edge.to] = d;
-				q.emplace(d, edge.to);
+			int to = edge.first;
+			int weight = edge.second;
+			int d = distance + weight;
+			if (d < distances[to]) {
+				distances[to] = d;
+				q.emplace(d, to);
 			}
 		}
 	}
+	return distances;
 }
 
-signed main() {
+signed main() {fast
 	iin(N, M);
-	vi A(N);
-	sfor(i, N)
-		cin >> A[i];
-	Graph graph(N);
+	viin(A, N);
+	directed_graph graph(N);
 	int U, V, B;
 	sfor(i, M) {
 		cin >> U >> V >> B;
 		--U;
 		--V;
-		graph[U].push_back({V, B});
-		graph[V].push_back({U, B});
+		graph.add_edge(U, V, B + A[V]);
+		graph.add_edge(V, U, B + A[U]);
 	}
-
-
-	vi d(N, inf);
-	Dijkstra(graph, d, A, 0);
-	for (int i = 1; i < N; ++i)
-		cout << d[i] << " ";
+	vi d = dijkstra(graph, 0);
+	deletepos(0, d);
+	sfor(i, N - 1)
+		cout << d[i] + A[0] << " ";
 	cout << endl;
-
 	return 0;
 }
